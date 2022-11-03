@@ -168,16 +168,16 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment
+     
 
   configure-infrastructure:
       docker:
-        - image: circleci/node:13.8.0
+        - image: amazon/aws-cli
       steps:
         - checkout
         - add_ssh_keys:
             fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
-        - run: apk add --update tar gzip
+       
         - attach_workspace:
             at: ~/
         - run:
@@ -217,7 +217,6 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install   
-      - destroy-environment      
 
   deploy-frontend:
     docker:
@@ -253,21 +252,20 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]      
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]          
+    ##  - build-frontend
+     # - build-backend
+      #- test-frontend:
+     #     requires: [build-frontend]
+    #  - test-backend:
+     #     requires: [build-backend]      
+     # - scan-backend:
+     #     requires: [build-backend]
+     # - scan-frontend:
+       #   requires: [build-frontend]          
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]    
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
+      
