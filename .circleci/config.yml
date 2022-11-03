@@ -110,7 +110,7 @@ jobs:
           name: Back-end scan
           command: |
             cd backend
-            npm install
+            npm istall
             npm audit fix --audit-level=critical --force
             
       - save_cache:
