@@ -31,7 +31,7 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            npm install
+            npm istall
             npm run build
       - save_cache:
           paths: [backend/node_modules]
