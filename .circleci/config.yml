@@ -5,7 +5,7 @@ orbs:
 commands:
   
 
-   destroy-environment: #step for create destroy-environment
+  destroy-environment: #step for create destroy-environment
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       Workflow_ID:
@@ -19,7 +19,28 @@ commands:
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-           
+  
+  
+  
+  revert-migrations: #this steps  for create migrations 
+    description: Revert the last migration
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            SUCCESS=$(curl --insecure  https://kvdb.io/Up68KQvVZCMC32AM4i2mJR/migration_<< parameters.Workflow_ID >>)
+            # Logic for reverting the database state
+            if (( $SUCCESS == 1 ));
+            then
+              cd ~/projects/backend
+              npm install
+              npm run migration:revert
+            fi         
      
 
            
@@ -168,7 +189,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-     
+      - destroy-environment
 
   configure-infrastructure:
       docker:
@@ -200,6 +221,14 @@ jobs:
             cd backend 
             npm install
             npm run migrations > migrations_dump.txt
+      - run: 
+          name: Install aws 
+          command: |
+            #test
+            sudo apt-get update && sudo apt-get install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install        
       - run:
           name: Send migration status to kvdb.io OR memstash.io
           command: |   
@@ -216,13 +245,16 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install   
-
+      - destroy-environment
+  
   deploy-frontend:
     docker:
-      - image : amazon/aws-cli
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run: sudo apt-get install tar gzip -y
+      - restore_cache:
+          keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
@@ -251,20 +283,21 @@ jobs:
 workflows:
   default:
     jobs:
-#      - test-frontend:
-#          requires: [build-frontend]
-#      - build-backend
-#      - build-frontend
-#      - test-backend:
-#          requires: [build-backend]      
-#      - scan-backend:
-#          requires: [build-backend]
-#      - scan-frontend:
-#          requires: [build-frontend]          
-      - deploy-infrastructure
-#          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - build-backend
+      - build-frontend
+      - test-backend:
+          requires: [build-backend]      
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]          
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]    
       - run-migrations:
           requires: [configure-infrastructure]
-      
+      - deploy-frontend:
+          requires: [run-migrations]
