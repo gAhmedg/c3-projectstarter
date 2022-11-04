@@ -142,11 +142,9 @@ jobs:
  #         name: scan front-end
  #         command: |
  #           cd frontend
- #           npm install
- #           npm audit fix 
- #           npm audit fix --audit-level=critical --force
- #           npm audit --audit-level=critical
-      
+  #          npm install
+    #        npm audit fix --audit-level=critical --force
+ 
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -301,10 +299,10 @@ workflows:
           requires: [build-backend]      
       - scan-backend:
           requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]          
+    #  - scan-frontend:
+     #     requires: [build-frontend]          
       - deploy-infrastructure :
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]    
       - run-migrations:
