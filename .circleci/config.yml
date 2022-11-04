@@ -157,7 +157,15 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             
-     
+  test-ba:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+        - run:
+              name: Install curl
+              command: |
+                sudo apt install curl
+      
 
 
   deploy-infrastructure:
@@ -209,7 +217,10 @@ jobs:
         - add_ssh_keys:
             fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
        
-        
+        - run:
+            name: Install curl
+            command: |
+              sudo apt install curl
         - run:
             name: Install dependencies
             command: |
@@ -277,21 +288,22 @@ jobs:
 workflows:
   default:
     jobs:
-      - test-frontend:
-          requires: [build-frontend]
-      - build-backend
-      - build-frontend
-      - test-backend:
-          requires: [build-backend]      
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]          
-      - deploy-infrastructure :
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]    
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
+      - test-ba
+    #  - test-frontend:
+    #      requires: [build-frontend]
+    #  - build-backend
+    #  - build-frontend
+    #  - test-backend:
+    #      requires: [build-backend]      
+    #  - scan-backend:
+    #      requires: [build-backend]
+    #  - scan-frontend:
+    #      requires: [build-frontend]          
+    #  - deploy-infrastructure :
+    #      requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+    #  - configure-infrastructure:
+    #      requires: [deploy-infrastructure]    
+    #  - run-migrations:
+    #      requires: [configure-infrastructure]
+    #  - deploy-frontend:
+    #      requires: [run-migrations]
