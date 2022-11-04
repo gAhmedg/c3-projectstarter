@@ -247,7 +247,9 @@ jobs:
           name: Run migrations
           command: |
             cd backend 
-            npm install      
+            npm install
+            npm run build
+            npm run test
             npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt
            
@@ -291,18 +293,18 @@ workflows:
   default:
     jobs:
      # - test-ba
-      - test-frontend:
-          requires: [build-frontend]
-      - build-backend
-      - build-frontend
-      - test-backend:
-          requires: [build-backend]      
-      - scan-backend:
-          requires: [build-backend]
+     # - build-backend
+     # - build-frontend
+     # - test-frontend:
+     #     requires: [build-frontend] 
+     # - test-backend:
+     #     requires: [build-backend]      
+     # - scan-backend:
+     #     requires: [build-backend]
     #  - scan-frontend:
      #     requires: [build-frontend]          
-      - deploy-infrastructure :
-          requires: [test-frontend, test-backend, scan-backend]
+      - deploy-infrastructure # :
+       #   requires: [test-frontend, test-backend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]    
       - run-migrations:
