@@ -3,6 +3,14 @@ orbs:
   slack: circleci/slack@4.10.1
 
 commands:
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            python3 -m pip install --user ansible
+
   install_awscli:
     description: Install AWS CLI v2
     steps:
@@ -221,7 +229,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: node:fermium-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - restore_cache:
