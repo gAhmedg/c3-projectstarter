@@ -9,17 +9,20 @@ commands:
       - run:
           name: Install Ansible
           command: |
-            python3 -m pip install --user ansible
-
+            sudo apt update 
+            sudo apt install software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible   
+            
   install_awscli:
     description: Install AWS CLI v2
     steps:
       - run:
           name: Install AWS CLI v2
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-              ./aws/install
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+               sudo  ./aws/install
   
 
   destroy-environment: #step for create destroy-environment
@@ -211,26 +214,26 @@ jobs:
 
   configure-infrastructure:
       docker:
-        - image: python:3.7-alpine3.11
+        - image: cimg/base:stable
       steps:
         - checkout
+        - install_ansible
         - add_ssh_keys:
             fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
-       
+         
+
         
-        - run:
-              name: Install curl
-              command: |
-                 apk add curl
-        - install_awscli          
-        - run:
-            name: Install dependencies
-            command: |
-              apk add --update ansible
+        
+      
+       # - install_awscli          
+        - attach_workspace:
+            at: ~/
         - run:
             name: Configure server
             command: |
-              ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt
+              cd .circle/ansible
+              cat inventory.txt
+              ansible-playbook -i inventory.txt configure-server.yml 
         
         - destroy-environment
 
@@ -241,22 +244,16 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-      - run: 
-          name: Install aws cli
-          command: |
-            #test
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zips
-            sudo ./aws/install       
+      - install_awscli 
+             
       - run: 
           name: Run migrations
           command: |
             cd backend 
             npm install      
-            npm run migrations > migrations_dump.txt
             npm audit fix --audit-level=critical --force
-                
+            npm run migrations > migrations_dump.txt
+            
           
      # - run: 
       #    name: Send Migration Results to kvdb.io
