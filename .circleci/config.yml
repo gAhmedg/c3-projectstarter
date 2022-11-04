@@ -164,7 +164,7 @@ jobs:
         - run:
               name: Install curl
               command: |
-                sudo apt install curl
+                 apt install curl
       
 
 
