@@ -61,7 +61,20 @@ commands:
               npm install
               npm run migration:revert
             fi         
-     
+
+  install_nodejs:
+    description: "This command installs NodeJS on the docker image"
+    steps:
+      - run:
+          name: "Installing node js"
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
+
+
+
+
+
 
            
 jobs:
@@ -271,10 +284,21 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
+      - install_awscli  
+      - install_nodejs
+      - install_ansible
       - run: sudo apt-get install tar gzip -y
       - restore_cache:
-          keys: [frontend-build]
-      - install_awscli  
+          keys: [backend-build]
+     
+      - attach_workspace:
+            at: ~/
+      
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
       - run:
           name: Get backend url
           command: |
@@ -292,6 +316,50 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
+
+  deploy-backend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - run: sudo apt-get install tar gzip -y
+      - add_ssh_keys:
+            fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
+      - install_awscli 
+      - install_nodejs
+      
+      - attach_workspace:
+            at: ~/
+      - install_ansible
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm install
+      - run:
+          name: backend 
+          command: |
+            cd backend
+            npm install
+            npm run build
+            cd ../
+            tar -czf artifact.tar.gz backend
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
+      - run:
+          name: Deploy backend objects
+          command: |
+            export TYPEORM_MIGRATIONS_DIR=.migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment
+      
+
+
+
 
 workflows:
   default:
@@ -314,4 +382,6 @@ workflows:
        - run-migrations:
           requires: [configure-infrastructure]
        - deploy-frontend:
+          requires: [run-migrations]
+       - deploy-backend:
           requires: [run-migrations]
