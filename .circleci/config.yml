@@ -240,14 +240,21 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-      - install_awscli     
+          
       - run: 
           name: Run migrations
           command: |
             cd backend 
             npm install      
             npm run migrations > migrations_dump.txt
-            
+      - run: 
+          name: Install aws cli
+          command: |
+            #test
+            sudo apt-get update && sudo apt-get install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zips
+            sudo ./aws/install        
      # - run: 
       #    name: Send Migration Results to kvdb.io
        #   command: |
