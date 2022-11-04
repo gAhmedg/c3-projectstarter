@@ -131,18 +131,19 @@ jobs:
           paths: [backend/node_modules]
           key: backend-test 
 
- # scan-frontend:
- #   docker:
- #     - image: circleci/node:13.8.0
- #   steps:
- #     - checkout
- #     - restore_cache:
- #         keys: [frontend-build]
- #     - run:
- #         name: scan front-end
- #         command: |
- #           cd frontend
-  #          npm install
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: scan front-end
+          command: |
+            cd frontend
+            npm install
+            npm audit fix --force 
     #        npm audit fix --audit-level=critical --force
  
   scan-backend:
@@ -247,12 +248,9 @@ jobs:
           name: Run migrations
           command: |
             cd backend 
-            npm install
-            npm run build
-            npm run test
-            npm audit fix --audit-level=critical --force
+            npm audit fix --force 
             npm run migrations > migrations_dump.txt
-           
+          #         npm audit fix --audit-level=critical --force
      # - run: 
       #    name: Send Migration Results to kvdb.io
        #   command: |
@@ -301,7 +299,7 @@ workflows:
      #     requires: [build-backend]      
      # - scan-backend:
      #     requires: [build-backend]
-    #  - scan-frontend:
+      - scan-frontend # :
      #     requires: [build-frontend]          
       - deploy-infrastructure # :
        #   requires: [test-frontend, test-backend, scan-backend]
