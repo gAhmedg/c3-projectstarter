@@ -212,38 +212,33 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment
 
+  
   configure-infrastructure:
       docker:
         - image: cimg/base:stable
       steps:
         - checkout
+        - install_awscli 
         - install_ansible
         - add_ssh_keys:
             fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
-         
-
-        
-        
-      
-       # - install_awscli          
+                 
         - attach_workspace:
             at: ~/
         - run:
             name: Configure server
             command: |
-              cd .circle/ansible
-              cat inventory.txt
-              ansible-playbook -i inventory.txt configure-server.yml 
+             ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt
         
         - destroy-environment
 
+
+  
   run-migrations:
     docker:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
       - install_awscli 
              
       - run: 
@@ -253,13 +248,10 @@ jobs:
             npm install      
             npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt
-            
-          
+           
      # - run: 
       #    name: Send Migration Results to kvdb.io
        #   command: |
-        #    if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-         #   then
           #    # If you are using kvdb.io, generate the bucket ID "Up68KQvVZCMC32AM4i2mJR" in your local terminal first
            #   curl -d '1' https://kvdb.io/Up68KQvVZCMC32AM4i2mJR/migration_${CIRCLE_WORKFLOW_ID:0:7}  
            # fi
