@@ -222,6 +222,7 @@ jobs:
               name: Install curl
               command: |
                  apk add curl
+        - install_awscli          
         - run:
             name: Install dependencies
             command: |
@@ -230,7 +231,7 @@ jobs:
             name: Configure server
             command: |
               ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt
-        - install_awscli 
+        
         - destroy-environment
 
   run-migrations:
