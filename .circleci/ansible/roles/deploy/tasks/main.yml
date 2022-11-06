@@ -1,16 +1,25 @@
 ---
-- name: "Add Node.js"
+- name: "Copy Backend file"
+  copy:
+    src: artifact.tar.gz
+    dest: /home/ubuntu
+
+- name: "Unarchive backend file"
+  ansible.builtin.shell: tar -xzf artifact.tar.gz
+  args:
+    chdir: /home/ubuntu
+
+- name: "installing node"
+  shell: |
+      cd /home/ubuntu/backend
+      npm i
+- name: "excuting with pm"
+  shell: |
+      cd /home/ubuntu/backend/dist
+      pm2 stop default
+      pm2 start main.js
+      
+- name: "pm2 server start"
   become: true
   shell: |
-    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-- name: "Install Node.js 13"
-  become: true
-  apt:
-    name: ["nodejs"]
-    state: latest
-    update_cache: yes
-
-- name: "Install PM2 Globally"
-  npm:
-    name: pm2
-    global: yes
+    env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
