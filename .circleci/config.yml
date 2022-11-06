@@ -351,10 +351,11 @@ jobs:
       - run:
           name: Deploy backend objects
           command: |
-            export TYPEORM_MIGRATIONS_DIR=.migrations
+            export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
             cd .circleci/ansible
+            echo "Contents  of the inventory file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
