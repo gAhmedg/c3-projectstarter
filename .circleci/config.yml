@@ -345,8 +345,7 @@ jobs:
            cd backend
             npm run build
             tar -czvf artifact.tar.gz dist/* package*
-            cd ../
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
+           cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
       - run:
           name: Deploy backend objects
           command: |
@@ -385,4 +384,4 @@ workflows:
        - deploy-frontend:
           requires: [run-migrations]
        - deploy-backend:
-          requires: [deploy-frontend]
+          requires: [run-migrations]
