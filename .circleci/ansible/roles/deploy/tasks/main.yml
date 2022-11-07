@@ -9,7 +9,7 @@
   args:
     chdir: /home/ubuntu
 
-- name: "installing node"
+#- name: "installing node"
 #  shell: |
  #     cd /home/ubuntu/backend
   #    npm i
