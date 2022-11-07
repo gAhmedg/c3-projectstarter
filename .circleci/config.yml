@@ -270,7 +270,7 @@ jobs:
             npm audit fix --force 
             npm audit fix --audit-level=critical --force
             
-#            npm run migrations > migrations_output.txt 
+            npm run migrations > migrations_output.txt 
              
             # cd backend 
             # npm install
