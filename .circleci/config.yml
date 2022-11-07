@@ -265,13 +265,11 @@ jobs:
           name: Run migrations
           command: |
 
-
-
-             cd backend
-              npm i
-         
-              npm run migrations >> migrations_output.txt 
-               npm audit fix --force 
+            cd backend
+            npm i
+            npm run build
+            npm run migrations > migrations_output.txt 
+             
             # cd backend 
             # npm install
             # npm run build
