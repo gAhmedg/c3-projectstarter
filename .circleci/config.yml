@@ -270,7 +270,7 @@ jobs:
             npm run migrations
             cat  /home/******ci/.npm/_logs/2022-11-07T19_08_26_765Z-debug.log
 
-
+ 
 
           # npm audit fix --force 
           # npm audit fix --audit-level=critical --force            
