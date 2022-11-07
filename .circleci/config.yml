@@ -257,8 +257,7 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      
 #      - install_awscli 
              
       - run: 
@@ -269,6 +268,7 @@ jobs:
             npm i
             npm run build
             npm audit fix --force
+            npm audit fix --audit-level=critical --force
             npm run migrations > migrations_output.txt 
              
             # cd backend 
