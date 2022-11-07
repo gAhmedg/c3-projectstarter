@@ -68,8 +68,12 @@ commands:
       - run:
           name: "Installing node js"
           command: |
+           sudo apt-get update  
+           sudo apt-get upgrade
+
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt install -y nodejs
+            sudo apt-get install gcc g++ make
 
 
 
@@ -318,8 +322,8 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: cimg/base:2022.04 
-     # cimg/base:stable
+      - image: cimg/base:stable
+     # cimg/base:2022.04
     steps:
       - checkout
       - install_awscli
@@ -334,27 +338,23 @@ jobs:
       
       - restore_cache:
           keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
+      
       - run:
           name: package backend
           command: |
-            cd backend
-            npm i
-            npm run build
-            cd ../
-            tar -czf artifact.tar.gz backend
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
+             cd backend
+             npm run build
+             tar -czf artifact.tar.gz dist/* package*
+             cd ..
+             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Deploy backend
           command: |
-            export TYPEORM_MIGRATIONS_DIR=.migrations
+            export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
             cd .circleci/ansible
+            cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
       
