@@ -264,7 +264,8 @@ jobs:
             cd backend
             npm i
             npm run build         
-            npm run migrations > migrations_output.txt 
+            npm run migrations > migrations_dump.txt
+ 
             
             
       - run: 
