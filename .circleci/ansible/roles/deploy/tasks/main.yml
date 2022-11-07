@@ -34,24 +34,24 @@
     production: yes
     state: present
 
-- name: Creates directory
-  file:
-    path: /home/ubuntu/backend-artifact
-    state: directory
-
-- name: "Unarchive"
-  unarchive:
+- name: "Copy Backend file"
+  copy:
     src: artifact.tar.gz
-    dest: /home/ubuntu/backend-artifact
+    dest: /home/ubuntu
+
+- name: "Unarchive backend file"
+  ansible.builtin.shell: tar -xzf artifact.tar.gz
+  args:
+    chdir: /home/ubuntu
 
 - name: "npm install"
   shell: |
-    cd /home/ubuntu/backend-artifact
+    cd /home/ubuntu/backend
     npm install
     
 - name: "Executing Node app with PM2"
   args:
-    chdir: /home/ubuntu/backend-artifact/dist
+    chdir: /home/ubuntu/backend/dist
   environment:
     ENVIRONMENT: production
     TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
