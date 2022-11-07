@@ -12,7 +12,7 @@
 - name: "installing node"
   shell: |
       cd /home/ubuntu/backend
-      npm i
+      npm install
 - name: "excuting with pm"
   shell: |
       cd /home/ubuntu/backend/dist
