@@ -10,9 +10,9 @@
     chdir: /home/ubuntu
 
 - name: "installing node"
-  shell: |
-      cd /home/ubuntu/backend
-      npm i
+#  shell: |
+ #     cd /home/ubuntu/backend
+  #    npm i
 - name: "excuting with pm"
   shell: |
       cd /home/ubuntu/backend/dist
