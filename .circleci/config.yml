@@ -285,7 +285,7 @@ jobs:
      - install_awscli  
      - install_nodejs
      - install_ansible
-    # - run: sudo apt-get install tar gzip -y
+     - run: sudo apt-get install tar gzip -y
      - restore_cache:
          keys: [backend-build]
      
@@ -332,24 +332,30 @@ jobs:
      
      - restore_cache:
          keys: [backend-build]
+
+     - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm install
      
      - run:
-         name: package backend
-         command: |
+          name: package backend
+          command: |
             cd backend
+            npm i
             npm run build
-            tar -czf artifact.tar.gz dist/* package*
-            cd ..
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            cd ../
+            tar -czf artifact.tar.gz backend
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
      - run:
          name: Deploy backend
          command: |
-           export TYPEORM_MIGRATIONS_DIR=./migrations
-           export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-           export TYPEORM_MIGRATIONS=./migrations/*.ts
-           cd .circleci/ansible
-           cat inventory.txt
-           ansible-playbook -i inventory.txt deploy-backend.yml
+            export TYPEORM_MIGRATIONS_DIR=.migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.ym
      - destroy-environment
      
 
