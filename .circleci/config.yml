@@ -318,14 +318,18 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: cimg/base:stable
+      - image: python:3.7-alpine3.11 
+     # cimg/base:stable
     steps:
       - checkout
-      - run: sudo apt-get install tar gzip -y
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible openssh-client tar gzip
       
       - install_awscli 
       - install_nodejs
-      - install_ansible
+      
       
       - add_ssh_keys:
             fingerprints: ["56:2d:73:06:5f:21:a3:0a:cf:90:60:78:2d:51:b1:ba"]
