@@ -264,11 +264,12 @@ jobs:
       - run: 
           name: Run migrations
           command: |
-
             cd backend
             npm i
             npm run build         
             npm run migrations
+            cat  /home/******ci/.npm/_logs/2022-11-07T19_08_26_765Z-debug.log
+
 
 
           # npm audit fix --force 
