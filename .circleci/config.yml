@@ -88,7 +88,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-deps]
+          keys: [frontend-build]
       - run:
           name: Build front-end
           command: |
@@ -97,7 +97,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-deps
+          key: frontend-build
 
   build-backend:
     docker:
@@ -105,7 +105,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-deps]
+          keys: [backend-build]
       - run:
           name: Back-end build
           command: |
@@ -114,7 +114,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-deps
+          key: backend-build
           
   test-frontend:
     docker:
@@ -128,7 +128,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run test
+            npm test
      
 
   test-backend:
@@ -143,11 +143,8 @@ jobs:
           command: |
             cd backend
             npm install
-            npm run test
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-test 
-
+            npm test
+      
   scan-frontend:
     docker:
       - image: cimg/node:13.8.0
