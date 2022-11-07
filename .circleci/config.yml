@@ -259,7 +259,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
-      - install_awscli 
+#      - install_awscli 
              
       - run: 
           name: Run migrations
@@ -269,6 +269,7 @@ jobs:
 
              cd backend
               npm i
+              npm audit fix --force 
               npm run build
               npm run migrations >> migrations_output.txt 
           
@@ -385,16 +386,16 @@ workflows:
           requires: [build-frontend] 
        - test-backend:
           requires: [build-backend]      
-       - scan-backend:
-          requires: [test-backend]
-       - scan-frontend :
-          requires: [test-frontend]          
+     #  - scan-backend:
+      #    requires: [test-backend]
+      # - scan-frontend :
+       #   requires: [test-frontend]          
     #   - deploy-infrastructure  :
      #     requires: [test-frontend, test-backend,scan-frontend, scan-backend]
       # - configure-infrastructure:
        #   requires: [deploy-infrastructure]    
        - run-migrations:
-          requires: [test-frontend, test-backend,scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend,]
     #      requires: [configure-infrastructure]
      #  - deploy-frontend:
      #     requires: [run-migrations]
