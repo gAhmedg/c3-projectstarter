@@ -327,7 +327,12 @@ jobs:
           command: |
             apk add --update ansible openssh-client tar gzip
       
-      - install_awscli 
+      - run:
+          name: Install AWS CLI for rollback
+          when: on_fail
+          command: |
+            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+
       - install_nodejs
       
       
