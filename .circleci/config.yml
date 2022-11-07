@@ -361,7 +361,7 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
      - destroy-environment
-     
+     - revert-migrations
 
 
 
