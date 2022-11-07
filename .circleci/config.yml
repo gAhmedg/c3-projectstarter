@@ -271,9 +271,12 @@ jobs:
       - run: 
           name: Send Migration Results to kvdb.io
           command: |
-              # If you are using kvdb.io, generate the bucket ID "4Qqez8VDaYjyQSa2D5Z2Xg" in your local terminal first
-              curl -d '1' https://kvdb.io/4Qqez8VDaYjyQSa2D5Z2Xg/migration_${CIRCLE_WORKFLOW_ID:0:7}  
-              fi
+            cd backend
+            if grep -q "No migrations are pending" migrations_output.txt
+            then
+            # If you are using kvdb.io, generate the bucket ID "4Qqez8VDaYjyQSa2D5Z2Xg" in your local terminal first
+            curl -d '1' https://kvdb.io/4Qqez8VDaYjyQSa2D5Z2Xg/migration_${CIRCLE_WORKFLOW_ID:0:7}  
+            fi
       - revert-migrations
       - destroy-environment
   
