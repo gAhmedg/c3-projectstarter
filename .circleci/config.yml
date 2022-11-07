@@ -52,7 +52,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/Up68KQvVZCMC32AM4i2mJR/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/4Qqez8VDaYjyQSa2D5Z2Xg/migration_<< parameters.Workflow_ID >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
@@ -267,13 +267,13 @@ jobs:
             npm run migrations > migrations_output.txt 
             
             
-     # - run: 
-      #    name: Send Migration Results to kvdb.io
-       #   command: |
-          #    # If you are using kvdb.io, generate the bucket ID "Up68KQvVZCMC32AM4i2mJR" in your local terminal first
-           #   curl -d '1' https://kvdb.io/Up68KQvVZCMC32AM4i2mJR/migration_${CIRCLE_WORKFLOW_ID:0:7}  
-           # fi
-     #- revert-migrations
+      - run: 
+          name: Send Migration Results to kvdb.io
+          command: |
+              # If you are using kvdb.io, generate the bucket ID "4Qqez8VDaYjyQSa2D5Z2Xg" in your local terminal first
+              curl -d '1' https://kvdb.io/4Qqez8VDaYjyQSa2D5Z2Xg/migration_${CIRCLE_WORKFLOW_ID:0:7}  
+              fi
+      - revert-migrations
       - destroy-environment
   
   deploy-frontend:
@@ -342,11 +342,11 @@ jobs:
           name: package backend
           command: |
             cd backend
-            npm i
             npm run build
-            cd ../
-            tar -czf artifact.tar.gz backend
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/tasks/files
+            tar -czvf artifact.tar.gz dist/* package*
+            cd .. 
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+
      - run:
          name: Deploy backend
          command: |
