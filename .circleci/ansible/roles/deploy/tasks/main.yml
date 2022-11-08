@@ -3,7 +3,7 @@
   copy:
     src: artifact.tar.gz
     dest: /home/ubuntu
-
+ 
 - name: "Unarchive backend file"
   ansible.builtin.shell: tar -xzf artifact.tar.gz
   args:
