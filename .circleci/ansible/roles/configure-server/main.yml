@@ -1,24 +1,50 @@
 ---
-- name: "Copy Backend file"
-  copy:
-    src: artifact.tar.gz
-    dest: /home/ubuntu
 
-- name: "Unarchive backend file"
-  ansible.builtin.shell: tar -xzf artifact.tar.gz
-  args:
-    chdir: /home/ubuntu
-
-- name: "installing node"
-  shell: |
-      cd /home/ubuntu/backend
-      npm i
-- name: "excuting with pm"
-  shell: |
-      cd /home/ubuntu/backend/dist
-      pm2 stop default
-      pm2 start main.js
-- name: "pm2 server start"
+- name: "update apt packages"
   become: true
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+  become_method: sudo
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+
+- name: "Remove dependencies that are no longer required"
+  become: true
+  apt:
+    autoremove: yes
+
+- name: "installing nodejs"
+  become: true
+  apt:
+    name: ["nodejs"]
+    state: latest
+    update_cache: yes
+
+- name: "installing npm"
+  become: true
+  apt:
+    name: ["npm"]
+    state: latest
+    update_cache: yes 
+
+- name: "install n node version manager"
+  become: true
+  npm:
+    name: n
+    global: yes
+    production: yes
+
+- name: "install nodejs 13.8.0"
+  become: true
+  shell: n 13.8.0
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
