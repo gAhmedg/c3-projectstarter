@@ -20,7 +20,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3030
           ToPort: 3030
-          CidrIp: 0.0.0.0/
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 9100
           ToPort: 9100
@@ -38,5 +38,4 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
-        - Key: project
-          Value: udapeople
+       
