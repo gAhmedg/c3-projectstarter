@@ -4,7 +4,7 @@ ssh -i prometheus.pem ubuntu@ec2-44-205-245-29.compute-1.amazonaws.com
 
 ssh -i prometheus.pem ubuntu@ec2-54-83-71-228.compute-1.amazonaws.com
 
-
+ssh -i udacity.pem ubuntu@ec2-54-164-5-26.compute-1.amazonaws.com
 
 # connect ssh    
 ssh -i prometheus.pem ubuntu@ec2-44-205-245-29.compute-1.amazonaws.com
