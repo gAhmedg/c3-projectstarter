@@ -471,9 +471,9 @@ workflows:
        - test-backend:
            requires: [build-backend]      
        - scan-backend:
-           requires: [test-backend]
+           requires: [build-backend]
        - scan-frontend :
-           requires: [test-frontend]          
+           requires: [build-frontend]          
        - deploy-infrastructure  :
    #       requires: [build-frontend]  
           requires: [test-frontend, test-backend,scan-frontend, scan-backend]
